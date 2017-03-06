@@ -51,7 +51,7 @@ public class SolutionScoreTest {
 	@Test
 	public void test_trending_today() {
 		try {
-			testScore("trending_today", 499980L);
+			testScore("trending_today", 0L);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -73,7 +73,6 @@ public class SolutionScoreTest {
 		List<String> inputLines = FileUtils.readLines(
 				new File(Property.OUTPUT_TEST_RESOURCES + fileName + Property.OUTPUT_FILE_EXTENSION), Charsets.ISO_8859_1);
 
-		// read first row and splits all the element separated with space char
 		String[] first_row = inputLines.get(0).split(" ");
 		for (int i = 1; i <= Integer.parseInt(first_row[0]); i++) {
 			String[] cache_row = inputLines.get(i).split(" ");

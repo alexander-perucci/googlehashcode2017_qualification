@@ -37,10 +37,8 @@ public class IOUtil {
 	public static ProblemInstance parseInput(File inputFile) throws IOException {
 		List<String> inputLines = FileUtils.readLines(inputFile, Charsets.ISO_8859_1);
 
-		// read first row and splits all the element separated with space char
-		String[] first_row = inputLines.get(0).split(SEPARATOR);
-		// get first element of the first line
 
+		String[] first_row = inputLines.get(0).split(SEPARATOR);
 		int nVideo = Integer.parseInt(first_row[0]);
 		int nEndpoint = Integer.parseInt(first_row[1]);
 		int nRequest = Integer.parseInt(first_row[2]);
