@@ -4,6 +4,6 @@
 libs/
 target/
 logs/
-output/
+generated_solution/
 .DS_Store
 *.zip

@@ -17,9 +17,15 @@
 package it.univaq.google.hashcode.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import it.univaq.google.hashcode.model.CacheServer;
+import it.univaq.google.hashcode.model.Endpoint;
 import it.univaq.google.hashcode.model.ProblemInstance;
+import it.univaq.google.hashcode.model.Video;
 
 public class ProblemUtil {
 
@@ -32,31 +38,30 @@ public class ProblemUtil {
 	}
 
 	public static long calculateScore(ProblemInstance problemInstance) {
-		/*List<Endpoint> endpoints = problemInstance.getEndpoints();
+		double numberOfRequest = 0;
+		double totalSavedTime = 0;
+		for (int i = 0; i < problemInstance.getRequests().length; i++) {
+			numberOfRequest += problemInstance.getRequests()[i].getNumberOfRequest();
+			totalSavedTime = totalSavedTime + (problemInstance.getRequests()[i].getNumberOfRequest()
+					* getSavedTime(problemInstance.getRequests()[i].getVideo(),problemInstance.getRequests()[i].getEndpoint(), problemInstance.getCacheServers()));
+		}
 
-		long totalRequests = 0;
-		long savedTime = 0;
-		
-		for (Endpoint endpoint : endpoints) {
-			for (Map.Entry<Video, Integer> entry_request : endpoint.getRequests().entrySet()) {
-				totalRequests+=entry_request.getValue();
-				Video requestedVideo = entry_request.getKey();
-				long minTime = endpoint.getLatencyToDatacenter();
-				for (Map.Entry<CacheServer, Integer> entry_cache : endpoint.getCaches().entrySet()) {
-					if(entry_cache.getKey().getVideos().contains(requestedVideo)){
-						if (entry_cache.getValue()< minTime){
-							minTime = entry_cache.getValue();
-						}
-					}
-				}			
-				savedTime+= entry_request.getValue() * (endpoint.getLatencyToDatacenter()-minTime);
+		return (long) ((totalSavedTime / numberOfRequest)*1000);
+	}
+
+	private static int getSavedTime(Video video, Endpoint endpoint, CacheServer[] cacheServers) {
+		int latencyToDatacenter = endpoint.getLatencyToDatacenter();
+		int latencyToCacheServer = latencyToDatacenter;
+		for (Map.Entry<CacheServer, Integer> mapCacheServerLatency : endpoint.getLatencyToCacheServer().entrySet()) {
+			if (cacheServers[mapCacheServerLatency.getKey().getId()]
+					.getVideos().contains(video)) {
+				if (mapCacheServerLatency.getValue() < latencyToCacheServer) {
+					latencyToCacheServer = mapCacheServerLatency.getValue();
+				}
 			}
 		}
-		
-		return (savedTime*1000)/totalRequests;
-		*/
-		return 0L;
+		return latencyToDatacenter - latencyToCacheServer;
+
 	}
-	
-	
+
 }

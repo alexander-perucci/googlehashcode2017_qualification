@@ -28,6 +28,7 @@ import it.univaq.google.hashcode.model.ProblemInstance;
 import it.univaq.google.hashcode.model.Request;
 import it.univaq.google.hashcode.model.Solution;
 import it.univaq.google.hashcode.model.Video;
+import it.univaq.google.hashcode.util.ProblemUtil;
 
 public class GreedySolvableImpl implements ISolvable {
 
@@ -60,7 +61,7 @@ public class GreedySolvableImpl implements ISolvable {
 			consideredVideos.add(popularVideo);
 		}
 
-		return new Solution(0L, cacheServers);
+		return new Solution(ProblemUtil.calculateScore(problemInstance), cacheServers);
 	}
 
 	private Video getPopularVideo(ProblemInstance problemInstance, List<Video> videosToBeExcluded) {

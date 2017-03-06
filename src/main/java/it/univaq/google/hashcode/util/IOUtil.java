@@ -87,28 +87,15 @@ public class IOUtil {
 		solutionString.append(solution.getCacheServers().size() + "\n");
 
 		for (CacheServer cacheServer : solution.getCacheServers()) {
-			// if (cacheServer.getVideos().size() >0){
 			solutionString.append(cacheServer.getId());
 			for (Video video : cacheServer.getVideos()) {
 				solutionString.append(SEPARATOR + video.getId());
 
 			}
 			solutionString.append("\n");
-
-			// }
 		}
 
 		FileUtils.writeStringToFile(outFile, solutionString.toString(), Charsets.ISO_8859_1);
-		/*
-		 * StringBuilder solutionString = new StringBuilder();
-		 * 
-		 * solutionString.append(slices.size());
-		 * 
-		 * for (Slice slice : slices) { solutionString.append("\n" +
-		 * slice.getStartRow() + " " + slice.getStartColumn() + " " +
-		 * slice.getEndRow() + " " + slice.getEndColumn()); } return
-		 * solutionString.toString();
-		 */
 	}
 
 }

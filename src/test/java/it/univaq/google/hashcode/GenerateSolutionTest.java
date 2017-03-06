@@ -27,17 +27,12 @@ import it.univaq.google.hashcode.model.Solution;
 import it.univaq.google.hashcode.util.IOUtil;
 import it.univaq.google.hashcode.util.ProblemUtil;
 
-public class SolutionTest {
-	public static final String TEST_RESOURCES = "." + File.separatorChar + "src" + File.separatorChar + "test"
-			+ File.separatorChar + "resources" + File.separatorChar;
-	public static final String INPUT_MAIN_RESOURCES_FOLDER_NAME = "input" + File.separatorChar;
-	public static final String OUTPUT_MAIN_RESOURCES_FOLDER_NAME = "output" + File.separatorChar;
-	public static final String OUTPUT_FILE_EXTENSION = ".out";
+public class GenerateSolutionTest {
 
 	@Test
 	public void test_kittens() {
 		try {
-			generateSolution("kittens.in");
+			generateSolution("kittens");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -46,7 +41,7 @@ public class SolutionTest {
 	@Test
 	public void test_me_at_the_zoo() {
 		try {
-			generateSolution("me_at_the_zoo.in");
+			generateSolution("me_at_the_zoo");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -55,7 +50,7 @@ public class SolutionTest {
 	@Test
 	public void test_trending_today() {
 		try {
-			generateSolution("trending_today.in");
+			generateSolution("trending_today");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -64,7 +59,7 @@ public class SolutionTest {
 	@Test
 	public void test_videos_worth_spreading() {
 		try {
-			generateSolution("videos_worth_spreading.in");
+			generateSolution("videos_worth_spreading");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -74,14 +69,14 @@ public class SolutionTest {
 		System.out.println("RUNNING: " + fileName);
 		long start = System.currentTimeMillis();
 		ProblemInstance problemInstance = IOUtil
-				.parseInput(new File(TEST_RESOURCES + INPUT_MAIN_RESOURCES_FOLDER_NAME + fileName));
+				.parseInput(new File(Property.INPUT_TEST_RESOURCES + fileName + Property.INPUT_FILE_EXTENSION));
 
 		ISolvable solvable = new GreedySolvableImpl();
 
 		Solution solution = solvable.getSolution(problemInstance);
-		IOUtil.generateOutput(solution, new File(TEST_RESOURCES + OUTPUT_MAIN_RESOURCES_FOLDER_NAME + fileName + "_"
-				+ solution.getScore() + "_" + ProblemUtil.getActualTime(".") + OUTPUT_FILE_EXTENSION));
-		System.out.println("END RUNNING: " + fileName + "  -  " + (System.currentTimeMillis() - start));
+		IOUtil.generateOutput(solution, new File(Property.OUTPUT_GENERATED_SOLUTION + fileName + "_"
+				+ solution.getScore() + "_" + ProblemUtil.getActualTime(".") + Property.OUTPUT_FILE_EXTENSION));
+		System.out.println("END RUNNING: " + fileName + "  -  " + (System.currentTimeMillis() - start) + " ms");
 	}
 
 }
