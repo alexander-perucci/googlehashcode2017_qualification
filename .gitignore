@@ -1,0 +1,9 @@
+.project
+.classpath
+.settings/
+libs/
+target/
+logs/
+output/
+.DS_Store
+*.zip
