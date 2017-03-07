@@ -16,7 +16,7 @@
  */
 package it.univaq.google.hashcode.model;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CacheServer {
@@ -26,7 +26,7 @@ public class CacheServer {
 	private List<Video> videos;
 
 	public CacheServer() {
-		this.videos = new ArrayList<Video>();
+		this.videos = new LinkedList<Video>();
 		this.usedSpace = 0;
 	}
 
@@ -65,11 +65,6 @@ public class CacheServer {
 	public void addVideo(Video video) {
 		this.videos.add(video);
 		usedSpace += usedSpace + video.getSize();
-	}
-
-	public void cleanVideoAssignment() {
-		this.videos = new ArrayList<Video>();
-		this.setUsedSpace(0);
 	}
 
 }

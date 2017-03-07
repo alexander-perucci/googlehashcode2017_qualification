@@ -16,8 +16,10 @@
  */
 package it.univaq.google.hashcode.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,20 +36,16 @@ public class GreedySolvableImpl implements ISolvable {
 
 	@Override
 	public Solution getSolution(ProblemInstance problemInstance) {
-		List<Video> consideredVideos = new ArrayList<Video>();
-		List<CacheServer> cacheServers = new ArrayList<CacheServer>();
+		List<Video> consideredVideos = new LinkedList<Video>();
+		List<CacheServer> cacheServers = new LinkedList<CacheServer>();
 
-		boolean continueToCreateSolution = true;
-
-		while (continueToCreateSolution) {
+		while (true) {
 			Video popularVideo = getPopularVideo(problemInstance, consideredVideos);
-
 			if (popularVideo == null) {
-				continueToCreateSolution = false;
+				return new Solution(ProblemUtil.calculateScore(problemInstance), cacheServers);
 			}
 
 			List<Endpoint> endpoints = getEndpoints(problemInstance, popularVideo);
-
 			for (CacheServer cacheServer : getGreedyCacheServers(endpoints, popularVideo)) {
 				cacheServer.getVideos().add(popularVideo);
 				cacheServer.setUsedSpace(cacheServer.getUsedSpace() + popularVideo.getSize());
@@ -55,13 +53,10 @@ public class GreedySolvableImpl implements ISolvable {
 				if (!cacheServers.contains(cacheServer)) {
 					cacheServers.add(cacheServer);
 				}
-
 			}
-
 			consideredVideos.add(popularVideo);
 		}
 
-		return new Solution(ProblemUtil.calculateScore(problemInstance), cacheServers);
 	}
 
 	private Video getPopularVideo(ProblemInstance problemInstance, List<Video> videosToBeExcluded) {
@@ -88,30 +83,31 @@ public class GreedySolvableImpl implements ISolvable {
 	}
 
 	private List<Endpoint> getEndpoints(ProblemInstance problemInstance, Video video) {
-		List<Endpoint> endpoints = new ArrayList<Endpoint>();
+		List<Endpoint> endpoints = new LinkedList<Endpoint>();
 
 		for (int i = 0; i < problemInstance.getRequests().length; i++) {
 			if (problemInstance.getRequests()[i].getVideo().equals(video)) {
 				endpoints.add(problemInstance.getRequests()[i].getEndpoint());
 			}
 		}
-
 		return endpoints;
 	}
 
 	private List<CacheServer> getGreedyCacheServers(List<Endpoint> endpoints, Video video) {
-		List<CacheServer> cacheServers = new ArrayList<CacheServer>();
-		boolean iterate = true;
+		List<CacheServer> cacheServers = new LinkedList<CacheServer>();
+		List<Endpoint> newEndpoints = new LinkedList<Endpoint>(endpoints);
 
-		List<Endpoint> newEndpoints = new ArrayList<Endpoint>(endpoints);
+		while (true) {
+			if (newEndpoints.isEmpty()) {
+				return cacheServers;
+			}
 
-		while (iterate) {
 			CacheServer cacheServer = getGreedyCacheServer(newEndpoints, video);
 			if (cacheServer == null) {
 				return cacheServers;
 			}
 
-			List<Endpoint> toberemoved = new ArrayList<Endpoint>();
+			List<Endpoint> toberemoved = new LinkedList<Endpoint>();
 
 			for (Endpoint endpoint : newEndpoints) {
 				if (endpoint.getLatencyToCacheServer().keySet().contains(cacheServer)) {
@@ -120,37 +116,44 @@ public class GreedySolvableImpl implements ISolvable {
 			}
 			newEndpoints.removeAll(toberemoved);
 			cacheServers.add(cacheServer);
-			if (newEndpoints.isEmpty()) {
-				return cacheServers;
-			}
-
 		}
-
-		return cacheServers;
 	}
 
 	private CacheServer getGreedyCacheServer(List<Endpoint> endpoints, Video video) {
-		Map<CacheServer, Integer> sharedCacheServer = new HashMap<CacheServer, Integer>();
+		Map<CacheServer, Integer> sharedCacheServer = new LinkedHashMap<CacheServer, Integer>();
+		Map<CacheServer, Integer> latencyCacheServer = new LinkedHashMap<CacheServer, Integer>();
 		for (Endpoint endpoint : endpoints) {
-			for (CacheServer cacheServer : endpoint.getLatencyToCacheServer().keySet()) {
-				if (sharedCacheServer.containsKey(cacheServer)) {
-					sharedCacheServer.put(cacheServer, sharedCacheServer.get(cacheServer) + 1);
+			for (Map.Entry<CacheServer, Integer> mapCacheServerLatency : endpoint.getLatencyToCacheServer()
+					.entrySet()) {
+				if (sharedCacheServer.containsKey(mapCacheServerLatency.getKey())) {
+					sharedCacheServer.put(mapCacheServerLatency.getKey(),
+							sharedCacheServer.get(mapCacheServerLatency.getKey()) + 1);
+					latencyCacheServer.put(mapCacheServerLatency.getKey(),
+							latencyCacheServer.get(mapCacheServerLatency.getKey()) + mapCacheServerLatency.getValue());
 				} else {
-					sharedCacheServer.put(cacheServer, 1);
+					sharedCacheServer.put(mapCacheServerLatency.getKey(), mapCacheServerLatency.getValue());
+					latencyCacheServer.put(mapCacheServerLatency.getKey(), mapCacheServerLatency.getValue());
+
 				}
 			}
 		}
 
-		Map<CacheServer, Integer> odered = new HashMap<CacheServer, Integer>();
-		sharedCacheServer.entrySet().stream().sorted(Map.Entry.<CacheServer, Integer>comparingByValue().reversed())
-				.forEachOrdered(x -> odered.put(x.getKey(), x.getValue()));
-
-		for (CacheServer cacheServer : odered.keySet()) {
+		Map<CacheServer, Integer> ordered = new LinkedHashMap<CacheServer, Integer>();
+		
+		 /*  sharedCacheServer.entrySet().stream().sorted(Map.Entry.<CacheServer, Integer>comparingByValue().reversed())
+				.forEachOrdered(x -> ordered.put(x.getKey(), x.getValue()));
+	     */
+		ordered = ProblemUtil.reverseSortByValue(sharedCacheServer, latencyCacheServer);
+	
+		for (CacheServer cacheServer : ordered.keySet()) {
 			if (cacheServer.getUsedSpace() + video.getSize() <= cacheServer.getSize()) {
 				return cacheServer;
 			}
 		}
+		
 
 		return null;
 	}
+
+	
 }

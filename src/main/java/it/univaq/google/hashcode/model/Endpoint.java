@@ -16,7 +16,7 @@
  */
 package it.univaq.google.hashcode.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Endpoint {
@@ -26,7 +26,7 @@ public class Endpoint {
 
 	public Endpoint(int latencyToDatacenter) {
 		this.latencyToDatacenter = latencyToDatacenter;
-		this.latencyToCacheServer = new HashMap<CacheServer, Integer>();
+		this.latencyToCacheServer = new LinkedHashMap<CacheServer, Integer>();
 	}
 
 	public int getLatencyToDatacenter() {

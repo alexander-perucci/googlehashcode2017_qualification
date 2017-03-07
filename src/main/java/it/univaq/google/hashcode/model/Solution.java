@@ -42,16 +42,4 @@ public class Solution {
 	public void setScore(long score) {
 		this.score = score;
 	}
-
-	public boolean isAdmissible() {
-		for (CacheServer server : cacheServers) {
-			int usedSpace = 0;
-			for (Video video : server.getVideos()) {
-				usedSpace += video.getSize();
-			}
-			if (usedSpace > server.getSize())
-				return false;
-		}
-		return true;
-	}
 }
