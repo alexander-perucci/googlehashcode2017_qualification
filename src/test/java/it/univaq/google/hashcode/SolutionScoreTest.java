@@ -51,7 +51,7 @@ public class SolutionScoreTest {
 	@Test
 	public void test_trending_today() {
 		try {
-			testScore("trending_today", 0L);
+			testScore("trending_today", 499980L);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
